@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -7,7 +8,46 @@
     <script defer src="main.js"></script>
     <title>Dagbok</title>
 </head>
+
 <body>
-    
+    <input style="padding: 0.5rem; margin: 0.5rem;" type="date" min="2017-01-01" max="2021-12-31" id="datum">
+    <input style="padding: 0.5rem; margin: 0.5rem;" type="text" placeholder="Rubrik!" id="rubrik">
+    <textarea name="Meddelande" id="meddelande" cols="30" rows="3" style="display: flex; margin: 0.5rem;"
+        placeholder="Meddelande!"></textarea>
+    <button id="btnSave" style="padding: 0.5rem; margin: 0.5rem;">Save</button>
+
+    <div id="content"></div>
+
+    <!-- <header>
+    <h1>Min dagbok</h1>
+</header>
+<main>
+    <div id="diaryContent">
+        <form>
+            <label for="textTitle">Rubrik</label>
+            <textarea id="textTitle"></textarea>
+
+            <label for="textDate">Datum</label>
+            <input type="date" id="textDate">
+
+            <label for="textEntry">Dagens inlägg</label>
+            <textarea id="textEntry"></textarea>
+
+            <button id="saveBtn">Spara</button>
+        </form> -->
+    <!-- </div>
+</main> -->
+    <form>
+        <label for="rubrik">Rubrik</label>
+        <input type="text" id="rubrik">
+        <label for="meddelande">Meddelande</label>
+        <textarea name="meddelande" id="meddelande" cols="30" rows="2"></textarea>
+        <button>submit</button>
+    </form>
+    <div class="container">
+    </div>
+
+
 </body>
+
 </html>
