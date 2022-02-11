@@ -1,53 +1,51 @@
-/* Våra dagboksinlägg skall sparas i localStorage så att vi kan återkomma till sidan vid ett senare tillfälle och skriva nya inlägg. 
-
-När vi skapar ett inlägg så skall vi kunna ändra och skriva datum, rubrik samt en text.
-Alla skriva inlägg skall sedan visas i kronologiskt ordning på sidan under formuläret.;*/
-
 const form = document.querySelector("form");
 const container = document.querySelector(".container");
 
 const dagbok = [];
 
-// Set till att det finns en tom array i localStorage
-if (localStorage.getItem("dagbokInlagg") === null) {
-    localStorage.setItem("dagbokInlagg", JSON.stringify(dagbok));
+if (localStorage.getItem("diary") === null) {
+    localStorage.setItem("diary", JSON.stringify(dagbok));
 }
 
+function Submit(e) {
+    e.preventDefault();
+    const storage = JSON.parse(localStorage.getItem("diary"));
 
-function handleSubmit(e) {
-    e.preventDefault(); // Förhindra standardbeteende
-
-    const storage = JSON.parse(localStorage.getItem("dagbokInlagg")); // Hämta från storage + Parse till js
-
-    // Lägga till vårt nya inlägg
     storage.unshift({
-        datum: new Date().toLocaleString(), // Lägger in tiden exakt när formuläret skickas
         rubrik: form.rubrik.value,
-        meddelande: form.meddelande.value
+        meddelande: form.meddelande.value,
+        datum: new Date().toLocaleString()
     });
-
-    localStorage.setItem("dagbokInlagg", JSON.stringify(storage)); // Spara till storage
-
-    ritaInlagg();
-}
-form.addEventListener("submit", handleSubmit);
-
-function inlagg(inlagg) {
-    return `<div>
-    <hr>
-    <p>${inlagg.datum}</p>
-    <h1>${inlagg.rubrik}</h1>
-    <p>${inlagg.meddelande}</p>
-  </div>`;
+    localStorage.setItem("diary", JSON.stringify(storage));
+    container.innerHTML = "";
+    printI();
 }
 
-function ritaInlagg() {
-    const storage = JSON.parse(localStorage.getItem("dagbokInlagg"));
+form.addEventListener("submit", Submit);
 
-    // Om storage inte är en tom lista
-    if (storage.length > 0) {
-        // skapa ett nytt element för varje inlägg
-        container.innerHTML = storage.map(i => inlagg(i));
+function printI() {
+    const storage = JSON.parse(localStorage.getItem("diary"));
+        for (let i = 0;i<= storage.length-1; i++) {
+            container.innerHTML += `<div id=${i}>
+                        <hr>
+                        <h2>${storage[i].rubrik}</h2>
+                        <p>${storage[i].meddelande} </p>
+                        <p>${storage[i].datum}</p>
+                        <button class='btnR'>TA BORT</button>
+                    </div>`;
+            console.log(i);
     }
+    const btn = document.querySelectorAll(".btnR");
+    for (let el of btn) {
+        el.addEventListener("click", (e) => { 
+            console.log(e.target.parentElement.id);
+            storage.splice(e.target.parentElement.id, 1);
+            localStorage.setItem("diary", JSON.stringify(storage));
+            console.log(storage); 
+            location.reload(); 
+        })
+    }  
 }
-ritaInlagg(); // Kör den här varje gång sidan laddas
+printI();
+
+

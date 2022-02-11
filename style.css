@@ -1,0 +1,75 @@
+body {
+  background-color: #c4998e;
+  background-image: linear-gradient(
+    50deg,
+    #ec75a193 0%,
+    #b868fab7,
+    #f88d628a 45%,
+    #f071a0a4 50%,
+    #d387db,
+    #ff1d70c4 100%
+  );
+  min-width: 100vw;
+  min-height: 100vh;
+}
+h1 {
+  text-shadow: 1px 1px 1px rgb(151, 146, 146);
+  font-family: 'Fredericka the Great', cursive;
+  text-align: center;
+}
+
+form {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+label {
+  font-weight: bolder;
+  font-size: x-large;
+  font-family: 'Fredericka the Great', cursive;
+}
+
+input[type='text'],
+textarea {
+  padding: 12px 20px;
+  margin: 8px 8px;
+  border: 1px inset black;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+
+button {
+  padding: 8px;
+  margin: 8px;
+  border-radius: 5px;
+  border: 2px inset;
+  font-weight: bolder;
+  font-family: 'Fredericka the Great', cursive;
+}
+
+button:hover {
+  background-color: rgba(235, 190, 197, 0.623);
+  color: white;
+}
+
+div {
+  font-family: 'Abril Fatface', cursive;
+  margin: 1rem;
+  text-align: center;
+}
+
+h2 {
+  font-size: xx-large;
+}
+
+p {
+  font-size: xx-large;
+}
+
+.btnR {
+  border: none;
+}
+
+
