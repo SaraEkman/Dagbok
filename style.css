@@ -51,25 +51,56 @@ button {
 
 button:hover {
   background-color: rgba(235, 190, 197, 0.623);
-  color: white;
 }
 
 div {
-  font-family: 'Abril Fatface', cursive;
   margin: 1rem;
   text-align: center;
 }
 
 h2 {
-  font-size: xx-large;
+  font-size: 25px;
 }
 
 p {
-  font-size: xx-large;
+  font-size: x-large;
 }
 
 .btnR {
   border: none;
 }
 
+.error {
+  color: red;
+}
 
+.popUp {
+  display: none;
+  position: absolute;
+  background-color: #352b36;
+  width: 100vw;
+  height: 2000vh;
+  top: 50%;
+  left: 50%;
+  opacity: 0.9;
+  transform: translate(-50%, -50%);
+}
+
+.popUpForm {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+
+  background-color: #c4998e;
+  background-image: linear-gradient(
+    50deg,
+    #ec75a193 0%,
+    #b868fab7,
+    #f88d628a 45%,
+    #f071a0a4 50%,
+    #d387db,
+    #ff1d70c4 100%
+  );
+  border-radius: 5px 20px 5px;
+}

@@ -1,51 +1,145 @@
 const form = document.querySelector("form");
 const container = document.querySelector(".container");
+const postsArr = [];
 
-const dagbok = [];
+window.addEventListener('load', async () => {
+    let posts = await makeReq('http://localhost:3000/post', 'GET');
 
-if (localStorage.getItem("diary") === null) {
-    localStorage.setItem("diary", JSON.stringify(dagbok));
+    localStorage.setItem('posts', JSON.stringify(posts));
+    console.log(posts);
+    printHtml();
+});
+
+
+if (localStorage.getItem("posts") === null) {
+    localStorage.setItem("posts", JSON.stringify(postsArr));
 }
 
-function Submit(e) {
+async function Submit(e) {
     e.preventDefault();
-    const storage = JSON.parse(localStorage.getItem("diary"));
+    form.insertAdjacentHTML('beforebegin', '<h1 class="error"></h1>');
+    let storage = {
+        title: form.title.value,
+        content: form.message.value
+    };
 
-    storage.unshift({
-        rubrik: form.rubrik.value,
-        meddelande: form.meddelande.value,
-        datum: new Date().toLocaleString()
-    });
-    localStorage.setItem("diary", JSON.stringify(storage));
-    container.innerHTML = "";
-    printI();
+    if (form.title.value === "" || form.message.value === "") {
+        document.querySelector('.error').innerHTML = 'Fyll i formuläret tack'
+        setTimeout(() => {
+            document.querySelector('.error').innerHTML = '';
+        }, 3000);
+    } else {
+        document.querySelector('.error').innerHTML = '';
+        let posts = await makeReq('http://localhost:3000/post', 'POST', storage);
+
+        let postsD = await makeReq('http://localhost:3000/post', 'GET');
+        localStorage.setItem('posts', JSON.stringify(postsD));
+        container.innerHTML = "";
+        console.log(posts);
+
+        printHtml();
+    }
+
+
 }
 
 form.addEventListener("submit", Submit);
 
-function printI() {
-    const storage = JSON.parse(localStorage.getItem("diary"));
-        for (let i = 0;i<= storage.length-1; i++) {
-            container.innerHTML += `<div id=${i}>
+function printHtml() {
+    container.innerHTML = "";
+
+    const storage = JSON.parse(localStorage.getItem("posts"));
+    for (let i = 0; i <= storage.length - 1; i++) {
+        container.innerHTML += `<div id='${storage[i]._id}' >
                         <hr>
-                        <h2>${storage[i].rubrik}</h2>
-                        <p>${storage[i].meddelande} </p>
-                        <p>${storage[i].datum}</p>
-                        <button class='btnR'>TA BORT</button>
-                    </div>`;
-            console.log(i);
+                        <h2>${storage[i].title}</h2>
+                        <p>${storage[i].content} </p>
+                        <p>${storage[i].date}</p>
+                        <button class='removeBtn'>TA BORT</button>
+                        <button class='editBtn'>Redigera</button>
+                            </div>`;
+        console.log(i);
     }
-    const btn = document.querySelectorAll(".btnR");
-    for (let el of btn) {
-        el.addEventListener("click", (e) => { 
+    const removeBtns = document.querySelectorAll(".removeBtn");
+    for (let el of removeBtns) {
+        el.addEventListener("click", async (e) => {
             console.log(e.target.parentElement.id);
-            storage.splice(e.target.parentElement.id, 1);
-            localStorage.setItem("diary", JSON.stringify(storage));
-            console.log(storage); 
-            location.reload(); 
-        })
-    }  
+            await makeReq('http://localhost:3000/post', 'DELETE', { _id: e.target.parentElement.id });
+
+            container.innerHTML = "";
+
+            let postsD = await makeReq('http://localhost:3000/post', 'GET');
+            localStorage.setItem("posts", JSON.stringify(postsD));
+
+            console.log(postsD);
+            location.reload();
+        });
+    }
+    const editBtns = document.querySelectorAll('.editBtn');
+    for (let btn of editBtns) {
+        btn.addEventListener("click", async (e) => {
+            // e.preventDefault();
+
+            let popUpContent = document.querySelector('.popUp');
+            popUpContent.style.display = 'block';
+
+            let popUpForm = document.querySelector('.popUpForm');
+            let popUpFormBtnSave = document.querySelector('.saveBtn');
+            let popUpFormBtnCancel = document.querySelector('.cancelBtn');
+            console.log(e.target.parentElement.id);
+            let _id = e.target.parentElement.id;
+            // popUpForm.insertAdjacentHTML('beforebegin', '<h1 class="error"></h1>');
+
+            popUpFormBtnSave.addEventListener('click', async () => {
+                e.preventDefault()
+                if (popUpForm.title.value === "" || popUpForm.message.value === "") {
+                    // console.log(popUpForm.title.value);
+                    // document.querySelector('.error').innerHTML = 'Fyll i formuläret tack';
+                    // setTimeout(() => {
+                    //     document.querySelector('.error').innerHTML = '';
+                    // }, 3000);
+                    return
+                }
+                else {
+                    // document.querySelector('.error').innerHTML = '';
+                    let edit = await makeReq('http://localhost:3000/post', 'PUT', {
+                        _id: _id, title: popUpForm.title.value,
+                        content: popUpForm.message.value
+                    });
+                    console.log(edit);
+
+                    container.innerHTML = "";
+
+                    let postsD = await makeReq('http://localhost:3000/post', 'GET');
+                    localStorage.setItem("posts", JSON.stringify(postsD));
+
+                    console.log(postsD);
+                    location.reload();
+                    popUpContent.style.display = 'none';
+                }
+            });
+
+            popUpFormBtnCancel.addEventListener('click', () => {
+                e.preventDefault();
+                popUpContent.style.display = 'none';
+                return `<a href="#body"></a>`;
+            });
+
+        });
+    }
 }
-printI();
+printHtml();
 
-
+async function makeReq(url, method, body) {
+    try {
+        let response = await fetch(url, {
+            method: method,
+            body: JSON.stringify(body),
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        console.log(response);
+        return await response.json();
+    } catch (err) { console.log('Error', err); }
+}
