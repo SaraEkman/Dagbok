@@ -74,6 +74,10 @@ p {
   color: red;
 }
 
+.errorPopUp {
+  color: #ffeb3b;
+}
+
 .popUp {
   display: none;
   position: absolute;

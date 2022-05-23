@@ -1,9 +1,16 @@
 const form = document.querySelector("form");
 const container = document.querySelector(".container");
+let popUpContent = document.querySelector('.popUp');
+
+let popUpForm = document.querySelector('.popUpForm');
+let popUpFormBtnSave = document.querySelector('.saveBtn');
+let popUpFormBtnCancel = document.querySelector('.cancelBtn');
 const postsArr = [];
+let _id;
+
 
 window.addEventListener('load', async () => {
-    let posts = await makeReq('http://localhost:3000/post', 'GET');
+    let posts = await makeReq('https://myblogwithmongoose.herokuapp.com/post', 'GET');
 
     localStorage.setItem('posts', JSON.stringify(posts));
     console.log(posts);
@@ -11,9 +18,9 @@ window.addEventListener('load', async () => {
 });
 
 
-if (localStorage.getItem("posts") === null) {
-    localStorage.setItem("posts", JSON.stringify(postsArr));
-}
+// if (JSON.parse(localStorage.getItem("posts")) === null) {
+//     localStorage.setItem("posts", JSON.stringify(postsArr));
+// }
 
 async function Submit(e) {
     e.preventDefault();
@@ -24,26 +31,24 @@ async function Submit(e) {
     };
 
     if (form.title.value === "" || form.message.value === "") {
-        document.querySelector('.error').innerHTML = 'Fyll i formuläret tack'
+        document.querySelector('.error').innerHTML = 'Fyll i formuläret tack';
         setTimeout(() => {
             document.querySelector('.error').innerHTML = '';
         }, 3000);
     } else {
         document.querySelector('.error').innerHTML = '';
-        let posts = await makeReq('http://localhost:3000/post', 'POST', storage);
+        let posts = await makeReq('https://myblogwithmongoose.herokuapp.com/post', 'POST', storage);
 
-        let postsD = await makeReq('http://localhost:3000/post', 'GET');
+        let postsD = await makeReq('https://myblogwithmongoose.herokuapp.com/post', 'GET');
         localStorage.setItem('posts', JSON.stringify(postsD));
         container.innerHTML = "";
-        console.log(posts);
-
+        console.log(posts); 
         printHtml();
     }
-
-
 }
 
 form.addEventListener("submit", Submit);
+
 
 function printHtml() {
     container.innerHTML = "";
@@ -58,17 +63,18 @@ function printHtml() {
                         <button class='removeBtn'>TA BORT</button>
                         <button class='editBtn'>Redigera</button>
                             </div>`;
-        console.log(i);
+        // console.log(i);
     }
     const removeBtns = document.querySelectorAll(".removeBtn");
     for (let el of removeBtns) {
         el.addEventListener("click", async (e) => {
-            console.log(e.target.parentElement.id);
-            await makeReq('http://localhost:3000/post', 'DELETE', { _id: e.target.parentElement.id });
+            e.preventDefault();
+            console.log("Id",e.target.parentElement.id);
+            await makeReq('https://myblogwithmongoose.herokuapp.com/post', 'DELETE', { _id: e.target.parentElement.id });
 
             container.innerHTML = "";
 
-            let postsD = await makeReq('http://localhost:3000/post', 'GET');
+            let postsD = await makeReq('https://myblogwithmongoose.herokuapp.com/post', 'GET');
             localStorage.setItem("posts", JSON.stringify(postsD));
 
             console.log(postsD);
@@ -77,58 +83,52 @@ function printHtml() {
     }
     const editBtns = document.querySelectorAll('.editBtn');
     for (let btn of editBtns) {
-        btn.addEventListener("click", async (e) => {
-            // e.preventDefault();
-
-            let popUpContent = document.querySelector('.popUp');
+        btn.addEventListener("click", (e) => {
+            e.preventDefault();
             popUpContent.style.display = 'block';
 
-            let popUpForm = document.querySelector('.popUpForm');
-            let popUpFormBtnSave = document.querySelector('.saveBtn');
-            let popUpFormBtnCancel = document.querySelector('.cancelBtn');
             console.log(e.target.parentElement.id);
-            let _id = e.target.parentElement.id;
-            // popUpForm.insertAdjacentHTML('beforebegin', '<h1 class="error"></h1>');
-
-            popUpFormBtnSave.addEventListener('click', async () => {
-                e.preventDefault()
-                if (popUpForm.title.value === "" || popUpForm.message.value === "") {
-                    // console.log(popUpForm.title.value);
-                    // document.querySelector('.error').innerHTML = 'Fyll i formuläret tack';
-                    // setTimeout(() => {
-                    //     document.querySelector('.error').innerHTML = '';
-                    // }, 3000);
-                    return
-                }
-                else {
-                    // document.querySelector('.error').innerHTML = '';
-                    let edit = await makeReq('http://localhost:3000/post', 'PUT', {
-                        _id: _id, title: popUpForm.title.value,
-                        content: popUpForm.message.value
-                    });
-                    console.log(edit);
-
-                    container.innerHTML = "";
-
-                    let postsD = await makeReq('http://localhost:3000/post', 'GET');
-                    localStorage.setItem("posts", JSON.stringify(postsD));
-
-                    console.log(postsD);
-                    location.reload();
-                    popUpContent.style.display = 'none';
-                }
-            });
+            _id = e.target.parentElement.id;
 
             popUpFormBtnCancel.addEventListener('click', () => {
                 e.preventDefault();
                 popUpContent.style.display = 'none';
                 return `<a href="#body"></a>`;
             });
-
         });
     }
 }
-printHtml();
+// printHtml();
+
+async function update(e) {
+    e.preventDefault();
+    popUpForm.insertAdjacentHTML('afterbegin', '<h2 class="errorPopUp"></h2>');
+    if (popUpForm.title.value === "" || popUpForm.message.value === "") {
+        console.log(popUpForm.title.value);
+        document.querySelector('.errorPopUp').innerHTML = 'Fyll i formuläret tack';
+        setTimeout(() => {
+            document.querySelector('.errorPopUp').innerHTML = '';
+        }, 3000);
+    } else {
+        document.querySelector('.errorPopUp').innerHTML = '';
+        let edit = await makeReq('https://myblogwithmongoose.herokuapp.com/post', 'PUT', {
+            _id: _id, title: popUpForm.title.value,
+            content: popUpForm.message.value
+        });
+        console.log(edit);
+
+
+        let postsD = await makeReq('https://myblogwithmongoose.herokuapp.com/post', 'GET');
+        localStorage.setItem("posts", JSON.stringify(postsD));
+        container.innerHTML = "";
+
+        console.log(postsD);
+        printHtml();
+        popUpContent.style.display = 'none';
+    }
+}
+
+popUpForm.addEventListener("submit", update);
 
 async function makeReq(url, method, body) {
     try {
