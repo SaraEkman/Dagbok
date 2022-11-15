@@ -8,12 +8,10 @@ let popUpFormBtnCancel = document.querySelector('.cancelBtn');
 const postsArr = [];
 let _id;
 
-
 window.addEventListener('load', async () => {
     let posts = await makeReq('https://myblogwithmongoose.herokuapp.com/post', 'GET');
 
     localStorage.setItem('posts', JSON.stringify(posts));
-    console.log(posts);
     printHtml();
 });
 
@@ -42,7 +40,7 @@ async function Submit(e) {
         let postsD = await makeReq('https://myblogwithmongoose.herokuapp.com/post', 'GET');
         localStorage.setItem('posts', JSON.stringify(postsD));
         container.innerHTML = "";
-        console.log(posts); 
+        console.log(posts);
         printHtml();
     }
 }
@@ -69,7 +67,7 @@ function printHtml() {
     for (let el of removeBtns) {
         el.addEventListener("click", async (e) => {
             e.preventDefault();
-            console.log("Id",e.target.parentElement.id);
+            console.log("Id", e.target.parentElement.id);
             await makeReq('https://myblogwithmongoose.herokuapp.com/post', 'DELETE', { _id: e.target.parentElement.id });
 
             container.innerHTML = "";
@@ -139,7 +137,6 @@ async function makeReq(url, method, body) {
                 'Content-Type': 'application/json'
             }
         });
-        console.log(response);
         return await response.json();
     } catch (err) { console.log('Error', err); }
 }
